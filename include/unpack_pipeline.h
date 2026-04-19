@@ -18,37 +18,42 @@
 #define HAZUKI_CORE_API
 #endif
 
-namespace hazuki {
+namespace hazuki
+{
 
-struct PipelineOptions {
-    std::filesystem::path unpack_root;
-    std::uint32_t decode_codepage = 932;
-    std::uint32_t encode_codepage = 932;
-};
+    struct PipelineOptions
+    {
+        std::filesystem::path unpack_root;
+        std::uint32_t decode_codepage = 932;
+        std::uint32_t encode_codepage = 932;
+    };
 
-struct PipelineProgress {
-    std::size_t completed = 0;
-    std::size_t total = 0;
-    std::wstring current_item;
-};
+    struct PipelineProgress
+    {
+        std::size_t completed = 0;
+        std::size_t total = 0;
+        std::wstring current_item;
+    };
 
-struct PipelineResult {
-    std::filesystem::path unpack_root;
-    std::size_t archive_count = 0;
-    std::size_t extracted_count = 0;
-    std::size_t processed_count = 0;
-    std::size_t converted_count = 0;
-    std::size_t skipped_count = 0;
-};
+    struct PipelineResult
+    {
+        std::filesystem::path unpack_root;
+        std::size_t archive_count = 0;
+        std::size_t extracted_count = 0;
+        std::size_t processed_count = 0;
+        std::size_t converted_count = 0;
+        std::size_t skipped_count = 0;
+    };
 
-struct PipelineCallbacks {
-    std::function<void(const std::wstring &line)> on_log;
-    std::function<void(const PipelineProgress &progress)> on_progress;
-};
+    struct PipelineCallbacks
+    {
+        std::function<void(const std::wstring &line)> on_log;
+        std::function<void(const PipelineProgress &progress)> on_progress;
+    };
 
-HAZUKI_CORE_API PipelineResult RunFullUnpackPipeline(
-    const std::vector<std::filesystem::path> &inputs,
-    const PipelineOptions &options,
-    const PipelineCallbacks &callbacks = {});
+    HAZUKI_CORE_API PipelineResult RunFullUnpackPipeline(
+        const std::vector<std::filesystem::path> &inputs,
+        const PipelineOptions &options,
+        const PipelineCallbacks &callbacks = {});
 
-}  // namespace hazuki
+} // namespace hazuki
