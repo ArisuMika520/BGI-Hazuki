@@ -1,0 +1,70 @@
+# =============================================================
+# BGI_Hazuki - Git ignore rules
+# =============================================================
+
+# ---- Build intermediates (MSVC) ----
+obj/
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.res
+*.idb
+*.tlog
+*.log
+
+# ---- Final build outputs ----
+# Binaries are distributed via GitHub Releases, not source control.
+bin/
+BGI_Unpacker/build/
+BGI_Unpacker/dist/
+BGI_Unpacker/__pycache__/
+
+# ---- Generated icon (produced from static/icon.png by make_icon.ps1) ----
+static/icon.ico
+
+# ---- Runtime / user output ----
+unpack/
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ---- Visual Studio / VS Code ----
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.code-workspace
+ipch/
+x64/
+x86/
+Debug/
+Release/
+
+# ---- OS junk ----
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# ---- Editor swap files ----
+*.swp
+*.swo
+*~
+
+# ---- Local user data / test assets ----
+*.arc
+*.cbg
+*.bw
+*.hazuki.txt
+test/
+samples/

@@ -1,0 +1,30 @@
+# Normalize line endings on commit, keep platform-native on checkout.
+* text=auto
+
+# Source code: enforce LF in repo (works fine with MSVC and modern editors).
+*.cpp   text eol=lf
+*.h     text eol=lf
+*.hpp   text eol=lf
+*.py    text eol=lf
+*.md    text eol=lf
+
+# Windows-only scripts: keep CRLF so cmd.exe / PowerShell behave correctly.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+*.rc    text eol=crlf
+
+# Binary assets: never touch line endings.
+*.png   binary
+*.ico   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.exe   binary
+*.dll   binary
+*.lib   binary
+*.pdb   binary
+*.arc   binary
+*.cbg   binary
+*.ogg   binary
+*.bw    binary
