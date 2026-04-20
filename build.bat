@@ -73,7 +73,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /DHAZUKI_CORE_USE /Iinclude /Foobj\gui\ /Fdobj\gui\gui_tool.pdb src\gui_main.cpp obj\app_icon.res /Febin\BGI_Hazuki_GUI.exe /link obj\core\BGI_Hazuki_Core.lib gdiplus.lib comctl32.lib comdlg32.lib shell32.lib user32.lib gdi32.lib /SUBSYSTEM:WINDOWS
+cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /DHAZUKI_CORE_USE /Iinclude /Foobj\gui\ /Fdobj\gui\gui_tool.pdb src\gui_main.cpp obj\app_icon.res /Febin\BGI_Hazuki_GUI.exe /link obj\core\BGI_Hazuki_Core.lib gdiplus.lib comctl32.lib comdlg32.lib shell32.lib user32.lib gdi32.lib ole32.lib /SUBSYSTEM:WINDOWS
 if errorlevel 1 (
     echo 编译失败。
     exit /b 1

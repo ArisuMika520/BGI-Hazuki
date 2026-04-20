@@ -1,3 +1,6 @@
 #include "resource.h"
 
 IDI_APP_ICON ICON "..\\static\\icon.ico"
+
+IDR_BG_PNG   RCDATA "..\\static\\bg.png"
+IDR_ICON_PNG RCDATA "..\\static\\icon.png"

@@ -1,4 +1,5 @@
 #include "unpack_pipeline.h"
+#include "../resources/resource.h"
 
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -15,6 +16,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstring>
 #include <cwchar>
 #include <filesystem>
 #include <memory>
@@ -71,8 +73,11 @@ namespace
     struct AppState
     {
         HWND window = nullptr;
+        HMODULE resource_module = nullptr;
         std::unique_ptr<Gdiplus::Bitmap> background_bitmap;
         std::unique_ptr<Gdiplus::Bitmap> icon_bitmap;
+        IStream *bg_stream = nullptr;
+        IStream *icon_stream = nullptr;
         std::unique_ptr<Gdiplus::PrivateFontCollection> private_fonts;
         std::wstring font_face = L"Microsoft YaHei UI";
         HICON icon_handle = nullptr;
@@ -179,23 +184,56 @@ namespace
         return name.data();
     }
 
+    std::unique_ptr<Gdiplus::Bitmap> LoadBitmapFromResource(HMODULE module, LPCWSTR resource_name, IStream **out_stream)
+    {
+        if (!out_stream)
+            return nullptr;
+        *out_stream = nullptr;
+        if (!module)
+            module = GetModuleHandleW(nullptr);
+        HRSRC info = FindResourceW(module, resource_name, RT_RCDATA);
+        if (!info)
+            return nullptr;
+        DWORD size = SizeofResource(module, info);
+        HGLOBAL data = LoadResource(module, info);
+        if (!data || size == 0)
+            return nullptr;
+        const void *ptr = LockResource(data);
+        if (!ptr)
+            return nullptr;
+        HGLOBAL mem = GlobalAlloc(GMEM_MOVEABLE, size);
+        if (!mem)
+            return nullptr;
+        void *dst = GlobalLock(mem);
+        if (!dst)
+        {
+            GlobalFree(mem);
+            return nullptr;
+        }
+        std::memcpy(dst, ptr, size);
+        GlobalUnlock(mem);
+        IStream *stream = nullptr;
+        if (CreateStreamOnHGlobal(mem, TRUE, &stream) != S_OK || !stream)
+        {
+            GlobalFree(mem);
+            return nullptr;
+        }
+        auto origin = std::unique_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromStream(stream));
+        if (!origin || origin->GetLastStatus() != Gdiplus::Ok)
+        {
+            stream->Release();
+            return nullptr;
+        }
+        
+        *out_stream = stream;
+        return origin;
+    }
+
     void LoadAssets(AppState *state)
     {
-        const auto bg = FindAsset({L"static/bg.png", L"BGI_Hazuki/static/bg.png"});
-        if (!bg.empty())
-        {
-            auto bitmap = std::make_unique<Gdiplus::Bitmap>(bg.c_str());
-            if (bitmap->GetLastStatus() == Gdiplus::Ok)
-                state->background_bitmap = std::move(bitmap);
-        }
-
-        const auto icon = FindAsset({L"static/icon.png", L"BGI_Hazuki/static/icon.png"});
-        if (!icon.empty())
-        {
-            auto bitmap = std::make_unique<Gdiplus::Bitmap>(icon.c_str());
-            if (bitmap->GetLastStatus() == Gdiplus::Ok)
-                state->icon_bitmap = std::move(bitmap);
-        }
+        const HMODULE resource_module = state ? state->resource_module : nullptr;
+        state->background_bitmap = LoadBitmapFromResource(resource_module, MAKEINTRESOURCEW(IDR_BG_PNG), &state->bg_stream);
+        state->icon_bitmap = LoadBitmapFromResource(resource_module, MAKEINTRESOURCEW(IDR_ICON_PNG), &state->icon_stream);
 
         const std::vector<std::filesystem::path> fonts = {
             L"附赠/推荐字体包/NotoSansSC-Medium.ttf",
@@ -719,6 +757,7 @@ namespace
             auto *create = reinterpret_cast<CREATESTRUCTW *>(lparam);
             state = reinterpret_cast<AppState *>(create->lpCreateParams);
             state->window = hwnd;
+            state->resource_module = create->hInstance;
             SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(state));
             Gdiplus::GdiplusStartupInput input;
             Gdiplus::GdiplusStartup(&state->gdiplus_token, &input, nullptr);
@@ -905,6 +944,16 @@ namespace
                 state->private_fonts.reset();
                 state->background_bitmap.reset();
                 state->icon_bitmap.reset();
+                if (state->bg_stream)
+                {
+                    state->bg_stream->Release();
+                    state->bg_stream = nullptr;
+                }
+                if (state->icon_stream)
+                {
+                    state->icon_stream->Release();
+                    state->icon_stream = nullptr;
+                }
                 if (state->gdiplus_token)
                     Gdiplus::GdiplusShutdown(state->gdiplus_token);
             }
@@ -933,8 +982,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show_command)
     window_class.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 
     // Config icon!
-    window_class.hIcon = LoadIconW(instance, MAKEINTRESOURCEW(1));
-    window_class.hIconSm = LoadIconW(instance, MAKEINTRESOURCEW(1));
+    window_class.hIcon = LoadIconW(instance, MAKEINTRESOURCEW(IDI_APP_ICON));
+    window_class.hIconSm = LoadIconW(instance, MAKEINTRESOURCEW(IDI_APP_ICON));
 
     RegisterClassExW(&window_class);
 
