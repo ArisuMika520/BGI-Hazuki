@@ -20,6 +20,7 @@ bin/
 BGI_Unpacker/build/
 BGI_Unpacker/dist/
 BGI_Unpacker/__pycache__/
+dist
 
 # ---- Generated icon (produced from static/icon.png by make_icon.ps1) ----
 static/icon.ico
@@ -68,3 +69,4 @@ Desktop.ini
 *.hazuki.txt
 test/
 samples/
+test'

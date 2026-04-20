@@ -1,4 +1,5 @@
 #include "png_io.h"
+#include "path_util.h"
 
 #include <Windows.h>
 #include <gdiplus.h>
@@ -70,7 +71,8 @@ namespace hazuki
 
     RasterImage LoadPng(const std::filesystem::path &path)
     {
-        Gdiplus::Bitmap source(path.c_str());
+        const auto effective_path = ToExtendedPath(path);
+        Gdiplus::Bitmap source(effective_path.c_str());
         ThrowIfGdiPlusError(source.GetLastStatus(), "Failed to open PNG image.");
 
         const auto width = source.GetWidth();
@@ -139,7 +141,8 @@ namespace hazuki
             PixelFormat32bppARGB,
             const_cast<BYTE *>(reinterpret_cast<const BYTE *>(image.pixels.data())));
         ThrowIfGdiPlusError(bitmap.GetLastStatus(), "Failed to create GDI+ bitmap.");
-        ThrowIfGdiPlusError(bitmap.Save(path.c_str(), &png_clsid, nullptr), "Failed to save PNG image.");
+        const auto effective_path = ToExtendedPath(path);
+        ThrowIfGdiPlusError(bitmap.Save(effective_path.c_str(), &png_clsid, nullptr), "Failed to save PNG image.");
     }
 
 } // namespace hazuki

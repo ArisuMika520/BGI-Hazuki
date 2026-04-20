@@ -1,5 +1,7 @@
 #include "resource.h"
 
+1 24 "app.manifest"
+
 IDI_APP_ICON ICON "..\\static\\icon.ico"
 
 IDR_BG_PNG   RCDATA "..\\static\\bg.png"

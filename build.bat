@@ -49,19 +49,19 @@ del /q *.ilk 2>nul
 if exist BGI_Unpacker\build rmdir /s /q BGI_Unpacker\build
 
 echo [BGI_Hazuki] 开始编译...
-cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /Iinclude /Foobj\image\ /Fdobj\image\image_tool.pdb src\image_tool_main.cpp src\bgi_cbg_codec.cpp src\png_io_gdiplus.cpp obj\app_icon.res /Febin\BGI_Hazuki_ImageTool.exe /link gdiplus.lib
+cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /Iinclude /Foobj\image\ /Fdobj\image\image_tool.pdb src\image_tool_main.cpp src\bgi_cbg_codec.cpp src\png_io_gdiplus.cpp obj\app_icon.res /Febin\BGI_Hazuki_ImageTool.exe /link gdiplus.lib /MANIFEST:NO
 if errorlevel 1 (
     echo 编译失败。
     exit /b 1
 )
 
-cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /Iinclude /Foobj\text\ /Fdobj\text\text_tool.pdb src\text_tool_main.cpp src\dsc_text_tool.cpp obj\app_icon.res /Febin\BGI_Hazuki_TextTool.exe
+cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /Iinclude /Foobj\text\ /Fdobj\text\text_tool.pdb src\text_tool_main.cpp src\dsc_text_tool.cpp obj\app_icon.res /Febin\BGI_Hazuki_TextTool.exe /link /MANIFEST:NO
 if errorlevel 1 (
     echo 编译失败。
     exit /b 1
 )
 
-cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /Iinclude /Foobj\asset\ /Fdobj\asset\asset_tool.pdb src\asset_tool_main.cpp src\asset_probe.cpp src\bgi_cbg_codec.cpp src\png_io_gdiplus.cpp src\dsc_text_tool.cpp obj\app_icon.res /Febin\BGI_Hazuki_AssetTool.exe /link gdiplus.lib
+cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /Iinclude /Foobj\asset\ /Fdobj\asset\asset_tool.pdb src\asset_tool_main.cpp src\asset_probe.cpp src\bgi_cbg_codec.cpp src\png_io_gdiplus.cpp src\dsc_text_tool.cpp obj\app_icon.res /Febin\BGI_Hazuki_AssetTool.exe /link gdiplus.lib /MANIFEST:NO
 if errorlevel 1 (
     echo 编译失败。
     exit /b 1
@@ -73,7 +73,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /DHAZUKI_CORE_USE /Iinclude /Foobj\gui\ /Fdobj\gui\gui_tool.pdb src\gui_main.cpp obj\app_icon.res /Febin\BGI_Hazuki_GUI.exe /link obj\core\BGI_Hazuki_Core.lib gdiplus.lib comctl32.lib comdlg32.lib shell32.lib user32.lib gdi32.lib ole32.lib /SUBSYSTEM:WINDOWS
+cl /nologo /std:c++17 /EHsc /W4 /utf-8 /DUNICODE /D_UNICODE /DHAZUKI_CORE_USE /Iinclude /Foobj\gui\ /Fdobj\gui\gui_tool.pdb src\gui_main.cpp obj\app_icon.res /Febin\BGI_Hazuki_GUI.exe /link obj\core\BGI_Hazuki_Core.lib gdiplus.lib comctl32.lib comdlg32.lib shell32.lib user32.lib gdi32.lib ole32.lib /SUBSYSTEM:WINDOWS /MANIFEST:NO
 if errorlevel 1 (
     echo 编译失败。
     exit /b 1

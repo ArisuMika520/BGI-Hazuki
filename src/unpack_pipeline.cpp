@@ -6,6 +6,11 @@
 #include "dsc_text_tool.h"
 #include "png_io.h"
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <Windows.h>
+
 #include <algorithm>
 #include <cwctype>
 #include <set>
@@ -116,6 +121,8 @@ namespace hazuki
                 case AssetKind::CbgImage:
                 {
                     const auto output_path = path.wstring() + L".png";
+                    EmitLog(callbacks, std::wstring(L"[CBG] 解析 ") + path.wstring() +
+                                           L" (文件大小: " + std::to_wstring(std::filesystem::file_size(path)) + L" 字节)");
                     auto image = DecodeCbg(path);
                     SavePng(image, output_path);
                     EmitLog(callbacks, std::wstring(L"[CBG->PNG] ") + path.wstring() + L" -> " + output_path);
@@ -156,7 +163,22 @@ namespace hazuki
             catch (const std::exception &ex)
             {
                 ++result.skipped_count;
-                EmitLog(callbacks, std::wstring(L"[WARN] ") + path.wstring() + L" -> processing skipped: " + std::wstring(ex.what(), ex.what() + std::char_traits<char>::length(ex.what())));
+                const auto narrow = std::string(ex.what());
+                const int wide_len = MultiByteToWideChar(CP_ACP, 0, narrow.c_str(), static_cast<int>(narrow.size()), nullptr, 0);
+                std::wstring reason(static_cast<std::size_t>(wide_len > 0 ? wide_len : 0), L'\0');
+                if (wide_len > 0)
+                {
+                    MultiByteToWideChar(CP_ACP, 0, narrow.c_str(), static_cast<int>(narrow.size()), reason.data(), wide_len);
+                }
+                else
+                {
+                    reason = std::wstring(narrow.begin(), narrow.end());
+                }
+                EmitLog(callbacks, std::wstring(L"[ERROR] ") + path.wstring() + L" -> 转换失败: " + reason);
+                if (path.wstring().size() >= 240)
+                {
+                    EmitLog(callbacks, std::wstring(L"[HINT] 该路径长度为 ") + std::to_wstring(path.wstring().size()) + L" 字符，接近或超过 Windows MAX_PATH (260) 限制，建议将输出目录设置为更短的路径。");
+                }
             }
 
             ++result.processed_count;
